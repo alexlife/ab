@@ -23,7 +23,7 @@ const App = () => {
             <Route index element={<Navigate to="/experiments" replace />} />
             <Route path="experiments" element={<ExperimentList />} />
             <Route path="experiments/create" element={<CreateExperiment />} />
-            <Route path="*" element={<div style={{ padding: 20 }}>页面未找到或建设中</div>} />
+            <Route path="*" element={<div style={{ padding: 20 }}>页面未找到</div>} />
           </Route>
         </Routes>
       </BrowserRouter>
