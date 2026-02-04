@@ -26,9 +26,9 @@ function getItem(label, key, icon, children) {
 
 const items = [
     getItem('实验管理', '/experiments', <ExperimentOutlined />),
-    getItem('Feature 管理', '/features', <DesktopOutlined />),
-    getItem('数据分析', '/analysis', <PieChartOutlined />),
-    getItem('人群管理', '/segments', <TeamOutlined />),
+    getItem('Feature 列表', '/features', <DesktopOutlined />),
+    //    getItem('数据分析', '/analysis', <PieChartOutlined />),
+    // getItem('人群管理', '/segments', <TeamOutlined />),
     getItem('系统设置', '/settings', <SettingOutlined />),
 ];
 
@@ -60,9 +60,7 @@ const MainLayout = () => {
                 <Header className="site-layout-background" style={{ padding: '0 24px', background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Title level={4} style={{ margin: 0 }}>实验列表</Title>
                     <Space size="large">
-                        <Badge count={5}>
-                            <BellOutlined style={{ fontSize: 20 }} />
-                        </Badge>
+
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <Avatar icon={<UserOutlined />} />
                             <Text>管理员</Text>

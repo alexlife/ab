@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Steps, Button, message, Layout, theme } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Step1BasicInfo from './Step1BasicInfo';
 import Step2Strategy from './Step2Strategy';
 import Step3Grouping from './Step3Grouping';
+import { addExperiment, getExperiments, updateExperiment } from '../../store/mockStore';
 
 const { Content } = Layout;
 
 const CreateExperiment = () => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const { token } = theme.useToken();
     const [current, setCurrent] = useState(0);
     const [formData, setFormData] = useState({
         // Basic Info
@@ -15,23 +19,32 @@ const CreateExperiment = () => {
         owner: '',
         description: '',
         startTime: null,
+        featureId: undefined,
 
         // Strategy
-        layer: '流量层 A',
-        isOrthogonal: true,
-        mutexLayer: null,
-        totalTraffic: 10,
+        layerId: undefined,
+        totalTraffic: 0,
         audience: [],
 
         // Grouping
         groups: [
-            { id: 1, name: '对照组', ratio: 50, isControl: true, description: '', whitelist: '', config: [], courses: [] },
-            { id: 2, name: '实验组 1', ratio: 50, isControl: false, description: '', whitelist: '', config: [], courses: [] }
+            { id: 1, name: '对照组', ratio: 50, isControl: true, description: '', whitelist: '', variationId: undefined },
+            { id: 2, name: '实验组 1', ratio: 50, isControl: false, description: '', whitelist: '', variationId: undefined }
         ]
     });
 
-    const navigate = useNavigate();
-    const { token } = theme.useToken();
+    useEffect(() => {
+        if (id) {
+            const experiments = getExperiments();
+            const exp = experiments.find(e => e.id === id);
+            if (exp) {
+                setFormData(exp);
+            }
+        }
+    }, [id]);
+
+    const isReadOnly = formData.status === '已结束';
+    const isOngoing = formData.status === '进行中';
 
     const next = () => {
         setCurrent(current + 1);
@@ -42,7 +55,45 @@ const CreateExperiment = () => {
     };
 
     const done = () => {
-        message.success('实验创建成功！');
+        // 校验白名单 UID 是否在不同分组间重复
+        const uidMap = new Map(); // uid -> groupName
+        let duplicateUid = null;
+        let duplicateGroups = [];
+
+        for (const group of formData.groups) {
+            if (!group.whitelist) continue;
+
+            // 解析所有 UID，支持逗号、换行或空格分隔
+            const uids = group.whitelist.split(/[,\n\s]+/).map(u => u.trim()).filter(u => u !== '');
+
+            for (const uid of uids) {
+                if (uidMap.has(uid)) {
+                    duplicateUid = uid;
+                    duplicateGroups = [uidMap.get(uid), group.name];
+                    break;
+                }
+                uidMap.set(uid, group.name);
+            }
+            if (duplicateUid) break;
+        }
+
+        if (duplicateUid) {
+            message.error(`相同 UID 不能出现在不同分组！具体 UID: ${duplicateUid} (出现在 ${duplicateGroups.join(' 和 ')})`);
+            return;
+        }
+
+        if (id) {
+            updateExperiment(formData);
+            message.success('实验保存成功！');
+        } else {
+            const newExp = {
+                id: `exp_${Date.now()}`,
+                ...formData,
+                status: '草稿'
+            };
+            addExperiment(newExp);
+            message.success('实验创建成功！');
+        }
         navigate('/experiments');
     };
 
@@ -54,17 +105,17 @@ const CreateExperiment = () => {
         {
             title: '基本信息',
             description: '名称与负责人',
-            content: <Step1BasicInfo data={formData} updateData={updateFormData} />,
+            content: <Step1BasicInfo data={formData} updateData={updateFormData} isReadOnly={isReadOnly} isOngoing={isOngoing} />,
         },
         {
             title: '生效策略',
             description: '流量与人群',
-            content: <Step2Strategy data={formData} updateData={updateFormData} />,
+            content: <Step2Strategy data={formData} updateData={updateFormData} isReadOnly={isReadOnly} isOngoing={isOngoing} />,
         },
         {
             title: '实验分组',
             description: '分配与配置',
-            content: <Step3Grouping data={formData} updateData={updateFormData} />,
+            content: <Step3Grouping data={formData} updateData={updateFormData} isReadOnly={isReadOnly} isOngoing={isOngoing} />,
         },
     ];
 
@@ -95,8 +146,11 @@ const CreateExperiment = () => {
                     </Button>
                 )}
                 {current === steps.length - 1 && (
-                    <Button type="primary" onClick={() => done()}>
-                        创建实验
+                    <Button
+                        type="primary"
+                        onClick={isReadOnly ? () => navigate('/experiments') : () => done()}
+                    >
+                        {isReadOnly ? '完成' : (id ? '保存修改' : '创建实验')}
                     </Button>
                 )}
             </div>
