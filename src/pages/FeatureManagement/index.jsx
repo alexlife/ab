@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Table, Button, Space, Modal, Form, Input, Select, Tag, Divider, message, Badge, Tooltip, TreeSelect, Typography } from 'antd';
+import { Table, Button, Space, Modal, Form, Input, Select, Tag, Divider, message, Badge, Tooltip, TreeSelect, Typography, Popconfirm } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, LockOutlined, SearchOutlined, RocketOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { getFeatures, updateFeature, addFeature, getExperiments } from '../../store/mockStore';
+import { getFeatures, updateFeature, addFeature, getExperiments, deleteFeature, saveExperiments } from '../../store/mockStore';
 import { useNavigate } from 'react-router-dom';
+import SpecOverlay from '../../components/DevTools/SpecOverlay';
 
 const { Option } = Select;
 const { Text, Title } = Typography;
-
 const COURSE_MOCK_DATA = {
     spus: [{ value: 'gamified', label: '游戏化' }, { value: 'traditional', label: '传统直播' }],
     skus: {
@@ -58,6 +58,7 @@ const FeatureManagement = () => {
     const [features, setFeatures] = useState([]);
     const [experiments, setExperiments] = useState([]);
     const [searchText, setSearchText] = useState('');
+    const [statusFilter, setStatusFilter] = useState('ALL');
     const [isFeatModalOpen, setIsFeatModalOpen] = useState(false);
     const [isVarModalOpen, setIsVarModalOpen] = useState(false);
     const [editingFeat, setEditingFeat] = useState(null);
@@ -73,11 +74,13 @@ const FeatureManagement = () => {
 
     useEffect(() => {
         loadData();
+        window.addEventListener('ab_store_updated', loadData);
+        window.addEventListener('ab_store_reset', loadData);
+        return () => {
+            window.removeEventListener('ab_store_updated', loadData);
+            window.removeEventListener('ab_store_reset', loadData);
+        };
     }, []);
-
-    const filteredFeatures = useMemo(() => {
-        return features.filter(f => f.name.toLowerCase().includes(searchText.toLowerCase()));
-    }, [features, searchText]);
 
     const isFeatureLocked = (feat) => {
         if (!feat) return false;
@@ -90,6 +93,24 @@ const FeatureManagement = () => {
     const hasEndedExperiment = (featId) => {
         return experiments.some(exp => exp.featureId === featId && exp.status === '已结束');
     };
+
+    const filteredFeatures = useMemo(() => {
+        return features.filter(f => {
+            const matchesSearch = f.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                f.key.toLowerCase().includes(searchText.toLowerCase());
+
+            let status = '未锁定';
+            if (f.isSolidified) {
+                status = '已固化';
+            } else if (isFeatureLocked(f)) {
+                status = '锁定中';
+            }
+
+            const matchesStatus = statusFilter === 'ALL' || status === statusFilter;
+
+            return matchesSearch && matchesStatus;
+        });
+    }, [features, searchText, statusFilter, experiments]);
 
     const showFeatModal = (feat = null) => {
         setEditingFeat(feat);
@@ -163,18 +184,48 @@ const FeatureManagement = () => {
     };
 
     const handleSolidify = (feat, varId) => {
+        const ongoingExp = experiments.find(e => e.featureId === feat.id && e.status === '进行中');
         Modal.confirm({
-            title: '确定固化配置吗？',
-            content: '固化之后该配置将应用在全量人群成为默认配置，且不可再编辑。',
+            title: ongoingExp ? '确定固化并结束实验吗？' : '确定固化配置吗？',
+            content: ongoingExp
+                ? '检测到该项目有关联的进行中实验。固化操作将自动【终止实验】并释放流量层比例，将此实验值设为全量默认配置。'
+                : '固化之后该配置将应用在全量人群成为默认配置，且不可再编辑。',
             okText: '确定固化',
             cancelText: '取消',
             onOk: () => {
-                const updated = { ...feat, isSolidified: true, defaultVariationId: varId };
-                updateFeature(updated);
-                message.success('已成功固化并锁定 Feature');
+                // 1. Update Feature
+                const updatedFeat = { ...feat, isSolidified: true, defaultVariationId: varId };
+                updateFeature(updatedFeat);
+
+                // 2. End Experiment if ongoing
+                if (ongoingExp) {
+                    const allExps = getExperiments();
+                    const updatedExps = allExps.map(e =>
+                        e.id === ongoingExp.id
+                            ? { ...e, status: '已结束', endTime: new Date().toLocaleString() }
+                            : e
+                    );
+                    saveExperiments(updatedExps);
+                }
+
+                message.success(ongoingExp ? '已成功固化并同步结束实验' : '已成功固化并锁定 Feature');
                 loadData();
             }
         });
+    };
+
+    const handleDeleteFeature = (id) => {
+        deleteFeature(id);
+        message.success('Feature 已删除');
+        loadData();
+    };
+
+    const handleDeleteVariation = (feat, varId) => {
+        const updatedFeat = { ...feat };
+        updatedFeat.variations = updatedFeat.variations.filter(v => v.id !== varId);
+        updateFeature(updatedFeat);
+        message.success('实验值已删除');
+        loadData();
     };
 
     const variationColumns = (feat) => [
@@ -185,7 +236,7 @@ const FeatureManagement = () => {
             render: (text, record) => (
                 <Space>
                     <Text>{text}</Text>
-                    {feat.defaultVariationId === record.id && <Tag color="gold" icon={<CheckCircleOutlined />}>默认配置</Tag>}
+                    {feat.defaultVariationId === record.id && <Tag color="gold" icon={<CheckCircleOutlined />}>已固化为默认配置</Tag>}
                 </Space>
             )
         },
@@ -196,19 +247,30 @@ const FeatureManagement = () => {
             render: (_, record) => {
                 const lockedArr = isFeatureLocked(feat);
                 const locked = lockedArr === true || feat.isSolidified;
-                const canSolidify = hasEndedExperiment(feat.id) && !feat.isSolidified;
+                const hasOngoingExp = experiments.some(e => e.featureId === feat.id && e.status === '进行中');
+                const canSolidify = (hasEndedExperiment(feat.id) || hasOngoingExp) && !feat.isSolidified;
 
                 return (
                     <Space>
-                        <Button type="link" size="small" onClick={() => showVarModal(feat, record)}>
-                            {locked ? '详情' : '编辑配置'}
-                        </Button>
-                        {canSolidify && (
-                            <Button type="link" size="small" style={{ color: '#fa8c16' }} onClick={() => handleSolidify(feat, record.id)}>
-                                固化为默认
+                        <SpecOverlay specId="rule_variation_edit">
+                            <Button type="link" size="small" onClick={() => showVarModal(feat, record)}>
+                                {locked ? '详情' : '编辑'}
                             </Button>
+                        </SpecOverlay>
+                        {canSolidify && (
+                            <SpecOverlay specId={['rule_feature_solidify', 'rule_feature_solidify_sync']}>
+                                <Button type="link" size="small" style={{ color: '#fa8c16' }} onClick={() => handleSolidify(feat, record.id)}>
+                                    固化为默认
+                                </Button>
+                            </SpecOverlay>
                         )}
-                        {!locked && <Button type="link" size="small" danger>删除</Button>}
+                        {!locked && (
+                            <SpecOverlay specId="rule_variation_delete">
+                                <Popconfirm title="确定删除该实验值吗？" onConfirm={() => handleDeleteVariation(feat, record.id)}>
+                                    <Button type="link" size="small" danger>删除</Button>
+                                </Popconfirm>
+                            </SpecOverlay>
+                        )}
                     </Space>
                 );
             }
@@ -235,9 +297,11 @@ const FeatureManagement = () => {
                         <Space>
                             <Text strong>{text}</Text>
                             {locked && (
-                                <Tooltip title={lockMsg}>
-                                    <LockOutlined style={{ color: '#faad14' }} />
-                                </Tooltip>
+                                <SpecOverlay specId="rule_feature_lock">
+                                    <Tooltip title={lockMsg}>
+                                        <LockOutlined style={{ color: '#faad14' }} />
+                                    </Tooltip>
+                                </SpecOverlay>
                             )}
                         </Space>
                         <Text type="secondary" style={{ fontSize: 12 }}>Key: {record.key}</Text>
@@ -268,14 +332,21 @@ const FeatureManagement = () => {
             }
         },
         {
-            title: '状态',
+            title: (
+                <SpecOverlay specId="rule_feature_status_desc">
+                    <span>状态</span>
+                </SpecOverlay>
+            ),
             key: 'status',
             width: 100,
             render: (_, record) => {
-                if (isFeatureLocked(record)) {
-                    return <Badge status="error" text="锁定中" />;
+                if (record.isSolidified) {
+                    return <Badge status="default" text="已固化" />;
                 }
-                return null;
+                if (isFeatureLocked(record)) {
+                    return <Badge status="warning" text="锁定中" />;
+                }
+                return <Badge status="success" text="未锁定" />;
             }
         },
         {
@@ -284,18 +355,29 @@ const FeatureManagement = () => {
             render: (_, record) => {
                 const locked = isFeatureLocked(record);
                 return (
-                    <Space>
-                        <Button type="link" icon={<EditOutlined />} onClick={() => showFeatModal(record)} disabled={locked}>编辑项目</Button>
-                        <Button
-                            type="primary"
-                            size="small"
-                            ghost
-                            icon={<RocketOutlined />}
-                            onClick={() => navigate('/experiments/create', { state: { featureId: record.id } })}
-                            disabled={locked || experiments.some(e => e.featureId === record.id)}
-                        >
-                            创建实验
-                        </Button>
+                    <Space size="middle">
+                        <SpecOverlay specId="rule_variation_edit">
+                            <a onClick={() => showFeatModal(record)} disabled={locked} style={{ color: locked ? 'rgba(0, 0, 0, 0.25)' : undefined }}>编辑</a>
+                        </SpecOverlay>
+                        {!locked && (
+                            <SpecOverlay specId="rule_feature_delete">
+                                <Popconfirm title="确定删除该 Feature 吗？" onConfirm={() => handleDeleteFeature(record.id)}>
+                                    <a style={{ color: '#ff4d4f' }}>删除</a>
+                                </Popconfirm>
+                            </SpecOverlay>
+                        )}
+                        <SpecOverlay specId="rule_feature_single_exp">
+                            <Button
+                                type="primary"
+                                size="small"
+                                ghost
+                                icon={<RocketOutlined />}
+                                onClick={() => navigate('/experiments/create', { state: { featureId: record.id } })}
+                                disabled={locked || experiments.some(e => e.featureId === record.id)}
+                            >
+                                创建实验
+                            </Button>
+                        </SpecOverlay>
                     </Space>
                 );
             }
@@ -305,17 +387,26 @@ const FeatureManagement = () => {
     return (
         <div style={{ background: '#fff', padding: 24, borderRadius: 16 }}>
             <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Title level={4} style={{ margin: 0 }}>Feature 列表</Title>
                 <Space>
                     <Input
-                        placeholder="输入名称搜索"
+                        placeholder="输入名称或 Key 搜索"
                         prefix={<SearchOutlined />}
                         value={searchText}
                         onChange={e => setSearchText(e.target.value)}
                         style={{ width: 220 }}
                     />
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => showFeatModal()}>新建项目</Button>
+                    <Select
+                        value={statusFilter}
+                        onChange={setStatusFilter}
+                        style={{ width: 120 }}
+                    >
+                        <Option value="ALL">全部状态</Option>
+                        <Option value="未锁定">未锁定</Option>
+                        <Option value="锁定中">锁定中</Option>
+                        <Option value="已固化">已固化</Option>
+                    </Select>
                 </Space>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => showFeatModal()}>新建项目</Button>
             </div>
 
             <Table
@@ -348,8 +439,12 @@ const FeatureManagement = () => {
             {/* Feature Modal */}
             <Modal title={editingFeat ? "编辑 Feature" : "新建 Feature"} open={isFeatModalOpen} onOk={handleFeatSubmit} onCancel={() => setIsFeatModalOpen(false)}>
                 <Form form={form} layout="vertical">
-                    <Form.Item name="name" label="Feature 名称" rules={[{ required: true }]}><Input placeholder="例如：主底按钮样式" /></Form.Item>
-                    <Form.Item name="key" label="Feature Key" rules={[{ required: true }]}><Input placeholder="例如：main_btn_style" disabled={editingFeat} /></Form.Item>
+                    <SpecOverlay specId="rule_feature_name_unique">
+                        <Form.Item name="name" label="Feature 名称" rules={[{ required: true }]}><Input placeholder="例如：主底按钮样式" /></Form.Item>
+                    </SpecOverlay>
+                    <SpecOverlay specId="rule_feature_unique_key">
+                        <Form.Item name="key" label="Feature Key" rules={[{ required: true }]}><Input placeholder="例如：main_btn_style" disabled={editingFeat} /></Form.Item>
+                    </SpecOverlay>
                 </Form>
             </Modal>
 
@@ -398,17 +493,19 @@ const FeatureManagement = () => {
                                             <Form.Item {...restField} name={[name, 'sku']} label="SKU" style={{ width: 140 }}>
                                                 <Select options={COURSE_MOCK_DATA.skus.gamified} />
                                             </Form.Item>
-                                            <Form.Item {...restField} name={[name, 'lessons']} label="Lessons" style={{ flex: 1, minWidth: 400 }}>
-                                                <TreeSelect
-                                                    treeData={COURSE_MOCK_DATA.lessons}
-                                                    multiple
-                                                    treeCheckable
-                                                    showCheckedStrategy={TreeSelect.SHOW_ALL}
-                                                    placeholder="请选择课程 (支持分类全选)"
-                                                    style={{ width: '100%' }}
-                                                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                                                />
-                                            </Form.Item>
+                                            <SpecOverlay specId="rule_variation_courses">
+                                                <Form.Item {...restField} name={[name, 'lessons']} label="Lessons" style={{ flex: 1, minWidth: 400 }}>
+                                                    <TreeSelect
+                                                        treeData={COURSE_MOCK_DATA.lessons}
+                                                        multiple
+                                                        treeCheckable
+                                                        showCheckedStrategy={TreeSelect.SHOW_ALL}
+                                                        placeholder="请选择课程 (支持分类全选)"
+                                                        style={{ width: '100%' }}
+                                                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                                    />
+                                                </Form.Item>
+                                            </SpecOverlay>
                                             <Button type="text" danger icon={<DeleteOutlined />} onClick={() => remove(name)} style={{ marginTop: 30 }} />
                                         </Space>
                                         {fields.length > 1 && <Divider dashed style={{ margin: '12px 0' }} />}

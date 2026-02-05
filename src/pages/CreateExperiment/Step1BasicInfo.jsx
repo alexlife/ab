@@ -1,92 +1,105 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, DatePicker, Select, Typography, Alert } from 'antd';
-import { getFeatures, getExperiments } from '../../store/mockStore';
-import { useLocation } from 'react-router-dom';
+import { Form, Input, Select, DatePicker, Alert } from 'antd';
 import dayjs from 'dayjs';
+import { getFeatures, getExperiments } from '../../store/mockStore';
+import SpecOverlay from '../../components/DevTools/SpecOverlay';
 
 const { TextArea } = Input;
-const { Text } = Typography;
+
+const isValidDate = (date) => date && dayjs(date).isValid();
 
 const Step1BasicInfo = ({ data, updateData, isReadOnly, isOngoing }) => {
-    const readOnly = isReadOnly || isOngoing;
+    const readOnly = isReadOnly;
     const [availableFeatures, setAvailableFeatures] = useState([]);
-    const location = useLocation();
-
-    const isValidDate = (dateStr) => {
-        if (!dateStr || dateStr === '-') return false;
-        try {
-            const d = dayjs(dateStr);
-            return d.isValid();
-        } catch (e) {
-            return false;
-        }
-    };
 
     useEffect(() => {
-        const allFeatures = getFeatures();
-        const allExps = getExperiments();
+        setFeatures(getFeatures());
+    }, [data.id, data.featureId]); // Add dependencies to re-validate if ID changes
 
-        // Rule: One Feature can only be associated with one experiment.
-        // Filter out features that already have an associated experiment.
-        const usedFeatureIds = allExps.map(exp => exp.featureId);
+    const setFeatures = (feats) => {
+        // Filter: show if not locked (not ongoing/ended experiment) OR if it is the one currently selected
+        // AND not solidified (unless it's the current one)
+        // AND not associated with ANOTHER experiment
 
-        // If we are editing or have a pre-filled feature from state, we should keep it in the list if it matches data.featureId
-        const filtered = allFeatures.filter(f => {
-            if (f.id === data.featureId) return true; // Keep currently selected
-            return !usedFeatureIds.includes(f.id) && !f.isSolidified;
+        const experiments = getExperiments();
+        const usedFeatureIds = new Set();
+
+        experiments.forEach(exp => {
+            // If this is the current experiment (editing), ignore it
+            if (exp.id === data.id) return;
+            if (exp.featureId) {
+                usedFeatureIds.add(exp.featureId);
+            }
         });
 
-        setAvailableFeatures(filtered);
+        const displayed = feats.filter(f => {
+            // If this feature is already selected by THIS experiment, show it.
+            if (f.id === data.featureId) return true;
 
-        // Handle pre-filled featureId from URL state
-        if (location.state?.featureId && !data.featureId) {
-            updateData('featureId', location.state.featureId);
-        }
-    }, [location.state, data.featureId, updateData]);
+            // If solidified, hide
+            if (f.isSolidified) return false;
+
+            // If associated with another experiment, hide
+            if (usedFeatureIds.has(f.id)) return false;
+
+            return true;
+        });
+        setAvailableFeatures(displayed);
+    }
 
     return (
         <Form layout="vertical" style={{ maxWidth: 600, margin: '0 auto' }} disabled={readOnly}>
-            <Form.Item label="实验名称" required>
-                <Input
-                    placeholder="请输入实验名称"
-                    value={data.name}
-                    onChange={(e) => updateData('name', e.target.value)}
-                    size="large"
-                    disabled={readOnly}
-                />
-            </Form.Item>
+            <SpecOverlay specId="rule_basic_required">
+                <Form.Item label="实验名称" required>
+                    <Input
+                        id="name"
+                        placeholder="请输入实验名称"
+                        value={data.name}
+                        onChange={(e) => updateData('name', e.target.value)}
+                        size="large"
+                        disabled={readOnly}
+                    />
+                </Form.Item>
+            </SpecOverlay>
 
-            <Form.Item
-                label="关联 Feature"
-                required
-                extra="遵循“一个 Feature 只能关联一个实验”原则。已关联实验或已固化的 Feature 将不在列表中显示。"
-            >
-                <Select
-                    placeholder="请选择 Feature"
-                    value={data.featureId}
-                    onChange={(val) => updateData('featureId', val)}
-                    options={availableFeatures.map(f => ({ label: f.name, value: f.id }))}
-                    size="large"
-                    disabled={readOnly || !!data.id}
-                />
-            </Form.Item>
+            <SpecOverlay specId="rule_feature_bind">
+                <Form.Item
+                    label="关联 Feature"
+                    required
+                    extra="遵循“一个 Feature 只能关联一个实验”原则。已关联实验或已固化的 Feature 将不在列表中显示。"
+                >
+                    <Select
+                        id="featureId"
+                        placeholder="请选择 Feature"
+                        value={data.featureId}
+                        onChange={(val) => updateData('featureId', val)}
+                        options={availableFeatures.map(f => ({ label: f.name, value: f.id }))}
+                        size="large"
+                        disabled={readOnly || !!data.id}
+                    />
+                </Form.Item>
+            </SpecOverlay>
 
             {availableFeatures.length === 0 && (
                 <Alert message="暂无可用 Feature" description="所有 Feature 都已关联实验或已固化，请先去 Feature 列表创建新项目。" type="warning" showIcon style={{ marginBottom: 24 }} />
             )}
 
-            <Form.Item label="负责人" required>
-                <Input
-                    placeholder="请输入负责人姓名"
-                    value={data.owner}
-                    onChange={(e) => updateData('owner', e.target.value)}
-                    size="large"
-                    disabled={readOnly}
-                />
-            </Form.Item>
+            <SpecOverlay specId="rule_basic_required">
+                <Form.Item label="负责人" required>
+                    <Input
+                        id="owner"
+                        placeholder="请输入负责人姓名"
+                        value={data.owner}
+                        onChange={(e) => updateData('owner', e.target.value)}
+                        size="large"
+                        disabled={readOnly}
+                    />
+                </Form.Item>
+            </SpecOverlay>
 
             <Form.Item label="开始时间">
                 <DatePicker
+                    id="startTime"
                     style={{ width: '100%' }}
                     placeholder="选择开始日期和时间"
                     showTime
@@ -100,6 +113,7 @@ const Step1BasicInfo = ({ data, updateData, isReadOnly, isOngoing }) => {
 
             <Form.Item label="实验描述">
                 <TextArea
+                    id="description"
                     rows={4}
                     placeholder="简述实验的目标和背景"
                     value={data.description}

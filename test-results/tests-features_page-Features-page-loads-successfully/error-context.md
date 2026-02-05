@@ -1,0 +1,235 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: A/B 测试平台
+      - menu [ref=e8]:
+        - menuitem "experiment 实验管理" [ref=e9] [cursor=pointer]:
+          - img "experiment" [ref=e10]:
+            - img [ref=e11]
+          - generic [ref=e13]: 实验管理
+        - menuitem "desktop Feature 列表" [ref=e14] [cursor=pointer]:
+          - img "desktop" [ref=e15]:
+            - img [ref=e16]
+          - generic [ref=e18]: Feature 列表
+        - menuitem "setting 系统设置" [ref=e19] [cursor=pointer]:
+          - img "setting" [ref=e20]:
+            - img [ref=e21]
+          - generic [ref=e23]: 系统设置
+    - img "left" [ref=e25] [cursor=pointer]:
+      - img [ref=e26]
+  - generic [ref=e28]:
+    - banner [ref=e29]:
+      - heading "Feature 列表" [level=4] [ref=e30]
+      - generic [ref=e33]:
+        - img "user" [ref=e36]:
+          - img [ref=e37]
+        - strong [ref=e41]: 管理员
+    - main [ref=e42]:
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - heading "Feature 列表" [level=4] [ref=e48]
+            - generic [ref=e50]:
+              - img "search" [ref=e52]:
+                - img [ref=e53]
+              - textbox "输入名称或 Key 搜索" [ref=e55]
+            - generic [ref=e57] [cursor=pointer]:
+              - generic [ref=e58]:
+                - generic "全部状态" [ref=e59]
+                - combobox [ref=e60]
+              - img "down" [ref=e62]:
+                - img [ref=e63]
+          - button "plus 新建项目" [ref=e65] [cursor=pointer]:
+            - img "plus" [ref=e67]:
+              - img [ref=e68]
+            - generic [ref=e71]: 新建项目
+        - generic [ref=e74]:
+          - table [ref=e78]:
+            - rowgroup [ref=e84]:
+              - row "Feature 名称 关联实验 状态 操作" [ref=e85]:
+                - columnheader [ref=e86]
+                - columnheader "Feature 名称" [ref=e87]
+                - columnheader "关联实验" [ref=e88]
+                - columnheader "状态" [ref=e89]
+                - columnheader "操作" [ref=e90]
+            - rowgroup [ref=e91]:
+              - 'row "展开行 主底按钮颜色 lock Key: main_btn_color 首页 Banner 颜色测试（进行中） 锁定中 edit 编辑 rocket 创建实验" [ref=e92]':
+                - cell "展开行" [ref=e93]:
+                  - button "展开行" [ref=e94] [cursor=pointer]
+                - 'cell "主底按钮颜色 lock Key: main_btn_color" [ref=e95]':
+                  - generic [ref=e96]:
+                    - generic [ref=e98]:
+                      - strong [ref=e101]: 主底按钮颜色
+                      - img "lock" [ref=e103]:
+                        - img [ref=e104]
+                    - generic [ref=e107]: "Key: main_btn_color"
+                - cell "首页 Banner 颜色测试（进行中）" [ref=e108]:
+                  - generic [ref=e111]: 首页 Banner 颜色测试（进行中）
+                - cell "锁定中" [ref=e112]:
+                  - generic [ref=e113]: 锁定中
+                - cell "edit 编辑 rocket 创建实验" [ref=e115]:
+                  - generic [ref=e116]:
+                    - button "edit 编辑" [disabled] [ref=e118]:
+                      - generic:
+                        - img "edit":
+                          - img
+                      - generic: 编辑
+                    - button "rocket 创建实验" [disabled] [ref=e120]:
+                      - generic:
+                        - img "rocket":
+                          - img
+                      - generic: 创建实验
+              - 'row "展开行 新用户引导流程 lock Key: new_user_guide 引导流程优化实验（已结束） 锁定中 edit 编辑 rocket 创建实验" [ref=e121]':
+                - cell "展开行" [ref=e122]:
+                  - button "展开行" [ref=e123] [cursor=pointer]
+                - 'cell "新用户引导流程 lock Key: new_user_guide" [ref=e124]':
+                  - generic [ref=e125]:
+                    - generic [ref=e127]:
+                      - strong [ref=e130]: 新用户引导流程
+                      - img "lock" [ref=e132]:
+                        - img [ref=e133]
+                    - generic [ref=e136]: "Key: new_user_guide"
+                - cell "引导流程优化实验（已结束）" [ref=e137]:
+                  - generic [ref=e140]: 引导流程优化实验（已结束）
+                - cell "锁定中" [ref=e141]:
+                  - generic [ref=e142]: 锁定中
+                - cell "edit 编辑 rocket 创建实验" [ref=e144]:
+                  - generic [ref=e145]:
+                    - button "edit 编辑" [disabled] [ref=e147]:
+                      - generic:
+                        - img "edit":
+                          - img
+                      - generic: 编辑
+                    - button "rocket 创建实验" [disabled] [ref=e149]:
+                      - generic:
+                        - img "rocket":
+                          - img
+                      - generic: 创建实验
+              - 'row "展开行 详情页改版 lock Key: detail_page_v2 详情页改版实验（已结束） 已固化 edit 编辑 rocket 创建实验" [ref=e150]':
+                - cell "展开行" [ref=e151]:
+                  - button "展开行" [ref=e152] [cursor=pointer]
+                - 'cell "详情页改版 lock Key: detail_page_v2" [ref=e153]':
+                  - generic [ref=e154]:
+                    - generic [ref=e156]:
+                      - strong [ref=e159]: 详情页改版
+                      - img "lock" [ref=e161]:
+                        - img [ref=e162]
+                    - generic [ref=e165]: "Key: detail_page_v2"
+                - cell "详情页改版实验（已结束）" [ref=e166]:
+                  - generic [ref=e169]: 详情页改版实验（已结束）
+                - cell "已固化" [ref=e170]:
+                  - generic [ref=e171]: 已固化
+                - cell "edit 编辑 rocket 创建实验" [ref=e173]:
+                  - generic [ref=e174]:
+                    - button "edit 编辑" [disabled] [ref=e176]:
+                      - generic:
+                        - img "edit":
+                          - img
+                      - generic: 编辑
+                    - button "rocket 创建实验" [disabled] [ref=e178]:
+                      - generic:
+                        - img "rocket":
+                          - img
+                      - generic: 创建实验
+              - 'row "展开行 课程推荐算法 Key: recommend_algo 推荐算法初步探索（草稿） 未锁定 edit 编辑 rocket 创建实验 delete 删除" [ref=e179]':
+                - cell "展开行" [ref=e180]:
+                  - button "展开行" [ref=e181] [cursor=pointer]
+                - 'cell "课程推荐算法 Key: recommend_algo" [ref=e182]':
+                  - generic [ref=e183]:
+                    - strong [ref=e188]: 课程推荐算法
+                    - generic [ref=e190]: "Key: recommend_algo"
+                - cell "推荐算法初步探索（草稿）" [ref=e191]:
+                  - generic [ref=e194]: 推荐算法初步探索（草稿）
+                - cell "未锁定" [ref=e195]:
+                  - generic [ref=e196]: 未锁定
+                - cell "edit 编辑 rocket 创建实验 delete 删除" [ref=e198]:
+                  - generic [ref=e199]:
+                    - button "edit 编辑" [ref=e201] [cursor=pointer]:
+                      - img "edit" [ref=e203]:
+                        - img [ref=e204]
+                      - generic [ref=e206]: 编辑
+                    - button "rocket 创建实验" [disabled] [ref=e208]:
+                      - generic:
+                        - img "rocket":
+                          - img
+                      - generic: 创建实验
+                    - button "delete 删除" [ref=e210] [cursor=pointer]:
+                      - img "delete" [ref=e212]:
+                        - img [ref=e213]
+                      - generic [ref=e215]: 删除
+              - 'row "展开行 支付成功页卡片 Key: pay_success_card 暂无关联 未锁定 edit 编辑 rocket 创建实验 delete 删除" [ref=e216]':
+                - cell "展开行" [ref=e217]:
+                  - button "展开行" [ref=e218] [cursor=pointer]
+                - 'cell "支付成功页卡片 Key: pay_success_card" [ref=e219]':
+                  - generic [ref=e220]:
+                    - strong [ref=e225]: 支付成功页卡片
+                    - generic [ref=e227]: "Key: pay_success_card"
+                - cell "暂无关联" [ref=e228]
+                - cell "未锁定" [ref=e229]:
+                  - generic [ref=e230]: 未锁定
+                - cell "edit 编辑 rocket 创建实验 delete 删除" [ref=e232]:
+                  - generic [ref=e233]:
+                    - button "edit 编辑" [ref=e235] [cursor=pointer]:
+                      - img "edit" [ref=e237]:
+                        - img [ref=e238]
+                      - generic [ref=e240]: 编辑
+                    - button "rocket 创建实验" [ref=e242] [cursor=pointer]:
+                      - img "rocket" [ref=e244]:
+                        - img [ref=e245]
+                      - generic [ref=e247]: 创建实验
+                    - button "delete 删除" [ref=e249] [cursor=pointer]:
+                      - img "delete" [ref=e251]:
+                        - img [ref=e252]
+                      - generic [ref=e254]: 删除
+              - 'row "展开行 支付按钮吸底样式 lock Key: pay_btn_style 支付按钮样式存量灰度（进行中） 锁定中 edit 编辑 rocket 创建实验" [ref=e255]':
+                - cell "展开行" [ref=e256]:
+                  - button "展开行" [ref=e257] [cursor=pointer]
+                - 'cell "支付按钮吸底样式 lock Key: pay_btn_style" [ref=e258]':
+                  - generic [ref=e259]:
+                    - generic [ref=e261]:
+                      - strong [ref=e264]: 支付按钮吸底样式
+                      - img "lock" [ref=e266]:
+                        - img [ref=e267]
+                    - generic [ref=e270]: "Key: pay_btn_style"
+                - cell "支付按钮样式存量灰度（进行中）" [ref=e271]:
+                  - generic [ref=e274]: 支付按钮样式存量灰度（进行中）
+                - cell "锁定中" [ref=e275]:
+                  - generic [ref=e276]: 锁定中
+                - cell "edit 编辑 rocket 创建实验" [ref=e278]:
+                  - generic [ref=e279]:
+                    - button "edit 编辑" [disabled] [ref=e281]:
+                      - generic:
+                        - img "edit":
+                          - img
+                      - generic: 编辑
+                    - button "rocket 创建实验" [disabled] [ref=e283]:
+                      - generic:
+                        - img "rocket":
+                          - img
+                      - generic: 创建实验
+          - list [ref=e284]:
+            - listitem "上一页" [ref=e285]:
+              - button "left" [disabled] [ref=e286]:
+                - img "left" [ref=e287]:
+                  - img [ref=e288]
+            - listitem "1" [ref=e290] [cursor=pointer]:
+              - generic [ref=e291]: "1"
+            - listitem "下一页" [ref=e292]:
+              - button "right" [disabled] [ref=e293]:
+                - img "right" [ref=e294]:
+                  - img [ref=e295]
+    - contentinfo [ref=e297]: A/B 测试平台 ©2024 Demo
+  - generic [ref=e298]:
+    - generic [ref=e299]:
+      - img "read" [ref=e301]:
+        - img [ref=e302]
+      - generic [ref=e304]: 显示需求标注
+      - switch [ref=e305] [cursor=pointer]
+    - button "rotate-left 初始化数据 (All States)" [ref=e309] [cursor=pointer]:
+      - img "rotate-left" [ref=e311]:
+        - img [ref=e312]
+      - generic [ref=e315]: 初始化数据 (All States)
+```

@@ -1,45 +1,85 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Breadcrumb, Avatar, Typography, Badge, Space } from 'antd';
+import { Layout, Menu, theme, Typography, Space, Breadcrumb, Drawer, Tag, Divider, Empty, Avatar } from 'antd';
 import {
-    DesktopOutlined,
-    PieChartOutlined,
-    FileOutlined,
-    TeamOutlined,
-    UserOutlined,
+    DashboardOutlined,
     ExperimentOutlined,
+    AppstoreOutlined,
     SettingOutlined,
-    BellOutlined
+    BulbOutlined,
+    SafetyCertificateOutlined,
+    UserOutlined,
+    DesktopOutlined
 } from '@ant-design/icons';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { SpecProvider, useSpec } from '../contexts/SpecContext';
+import { EXPERIMENT_SPECS } from '../specs/experiment';
+import DevToolbar from '../components/DevTools/DevToolbar';
 
-const { Header, Content, Footer, Sider } = Layout;
-const { Title, Text } = Typography;
+const { Header, Content, Sider, Footer } = Layout;
+const { Title, Text, Paragraph } = Typography;
 
-function getItem(label, key, icon, children) {
-    return {
-        key,
-        icon,
-        children,
-        label,
-    };
-}
+const SpecDetailsSidebar = () => {
+    const { isSidebarOpen, closeSidebar, selectedSpecId } = useSpec();
 
-const items = [
-    getItem('实验管理', '/experiments', <ExperimentOutlined />),
-    getItem('Feature 列表', '/features', <DesktopOutlined />),
-    //    getItem('数据分析', '/analysis', <PieChartOutlined />),
-    // getItem('人群管理', '/segments', <TeamOutlined />),
-    getItem('系统设置', '/settings', <SettingOutlined />),
-];
+    const specIds = Array.isArray(selectedSpecId) ? selectedSpecId : [selectedSpecId];
+    const specs = specIds.map(id => EXPERIMENT_SPECS[id]).filter(Boolean);
 
-const MainLayout = () => {
-    const [collapsed, setCollapsed] = useState(false);
+    return (
+        <Drawer
+            title={
+                <Space>
+                    <BulbOutlined style={{ color: '#1677ff' }} />
+                    <Title level={5} style={{ margin: 0 }}>PRD 需求详情</Title>
+                </Space>
+            }
+            placement="right"
+            onClose={closeSidebar}
+            open={isSidebarOpen}
+            width={450}
+            zIndex={2000}
+            mask={false}
+            style={{ marginTop: 64 }}
+            styles={{ header: { background: '#fafafa', borderBottom: '1px solid #f0f0f0' } }}
+        >
+            {specs.length > 0 ? (
+                <div style={{ padding: '8px 4px' }}>
+                    {specs.map((spec, index) => (
+                        <div key={spec.id} style={{ marginBottom: index === specs.length - 1 ? 20 : 40 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                <Tag color={spec.level === 'critical' ? 'error' : spec.level === 'warning' ? 'warning' : 'processing'}>
+                                    {spec.level === 'critical' ? '核心原则' : spec.level === 'warning' ? '强制约束' : '业务逻辑'}
+                                </Tag>
+                                <Text type="secondary" style={{ fontSize: 11 }}>ID: {spec.id}</Text>
+                            </div>
+                            <Title level={4} style={{ marginTop: 0, marginBottom: 16, fontSize: 18 }}>{spec.title}</Title>
+                            <Paragraph style={{ fontSize: 14, lineHeight: '1.6', color: '#434343', background: '#f9f9f9', padding: '16px', borderRadius: 8, whiteSpace: 'pre-wrap', border: '1px solid #f0f0f0' }}>
+                                {spec.content}
+                            </Paragraph>
+                            <div style={{ textAlign: 'right', marginTop: 8 }}>
+                                <Text type="secondary" style={{ fontSize: 11 }}>来源: {spec.source}</Text>
+                            </div>
+                            {index < specs.length - 1 && <Divider style={{ margin: '32px 0' }} />}
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <Empty description="请点击页面上的 💡 标记查看详情" style={{ marginTop: 100 }} />
+            )}
+        </Drawer>
+    );
+};
+
+const LayoutContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [collapsed, setCollapsed] = useState(false);
 
-    const handleMenuClick = (e) => {
-        navigate(e.key);
-    };
+    const items = [
+        { key: '/experiments', icon: <ExperimentOutlined />, label: '实验管理' },
+        { key: '/features', icon: <DesktopOutlined />, label: 'Feature 列表' },
+        { key: '/introduction', icon: <BulbOutlined />, label: '说明' },
+        { key: '/settings', icon: <SettingOutlined />, label: '系统设置' },
+    ];
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
@@ -49,37 +89,43 @@ const MainLayout = () => {
                 </div>
                 <Menu
                     theme="dark"
-                    defaultSelectedKeys={['/experiments']}
                     selectedKeys={[location.pathname]}
                     mode="inline"
                     items={items}
-                    onClick={handleMenuClick}
+                    onClick={(e) => navigate(e.key)}
                 />
             </Sider>
-            <Layout className="site-layout">
-                <Header className="site-layout-background" style={{ padding: '0 24px', background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Title level={4} style={{ margin: 0 }}>实验列表</Title>
+            <Layout>
+                <Header style={{ padding: '0 24px', background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', zIndex: 1001 }}>
+                    <Title level={4} style={{ margin: 0 }}>
+                        {location.pathname.includes('/experiments') ? '实验管理' :
+                            location.pathname.includes('/features') ? 'Feature 列表' :
+                                location.pathname.includes('/introduction') ? '说明' : '系统设置'}
+                    </Title>
                     <Space size="large">
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Space>
                             <Avatar icon={<UserOutlined />} />
-                            <Text>管理员</Text>
-                        </div>
+                            <Text strong>管理员</Text>
+                        </Space>
                     </Space>
                 </Header>
-                <Content style={{ margin: '0 16px' }}>
-                    <Breadcrumb style={{ margin: '16px 0' }}>
-                        <Breadcrumb.Item>首页</Breadcrumb.Item>
-                        <Breadcrumb.Item>实验列表</Breadcrumb.Item>
-                    </Breadcrumb>
-                    <div className="site-layout-background" style={{ padding: 24, minHeight: 360, background: '#fff', borderRadius: 8 }}>
+                <Content style={{ margin: '16px', overflow: 'initial' }}>
+                    <div style={{ padding: 24, background: '#fff', borderRadius: 12, minHeight: 'calc(100vh - 180px)' }}>
                         <Outlet />
                     </div>
                 </Content>
                 <Footer style={{ textAlign: 'center' }}>A/B 测试平台 ©2024 Demo</Footer>
             </Layout>
+            <SpecDetailsSidebar />
+            <DevToolbar />
         </Layout>
     );
 };
+
+const MainLayout = () => (
+    <SpecProvider>
+        <LayoutContent />
+    </SpecProvider>
+);
 
 export default MainLayout;

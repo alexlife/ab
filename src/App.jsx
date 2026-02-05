@@ -6,6 +6,7 @@ import MainLayout from './layouts/MainLayout';
 import ExperimentList from './pages/ExperimentList';
 import CreateExperiment from './pages/CreateExperiment';
 import FeatureManagement from './pages/FeatureManagement';
+import Introduction from './pages/Documentation/Introduction';
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="experiments/create" element={<CreateExperiment />} />
             <Route path="experiments/:id" element={<CreateExperiment />} />
             <Route path="features" element={<FeatureManagement />} />
+            <Route path="introduction" element={<Introduction />} />
             <Route path="*" element={<div style={{ padding: 20 }}>页面未找到</div>} />
           </Route>
         </Routes>
