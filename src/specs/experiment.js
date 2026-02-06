@@ -32,10 +32,10 @@ export const EXPERIMENT_SPECS = {
     },
     'rule_audience_lock': {
         id: 'rule_audience_lock',
-        title: '状态机-人群锁定',
-        content: '【进行中】实验禁止修改“人群筛选 (Audience)”。',
+        title: '状态机-人群筛选规则',
+        content: '【进行中】实验禁止修改“人群筛选 (Audience)”。支持同时选择多个人群包，多个人群之间遵循 OR (或) 逻辑，命中其一即生效。',
         level: 'warning',
-        source: 'PRD 4. 权限矩阵'
+        source: 'PRD 4. 权限矩阵 / 2.2 生效策略'
     },
 
     // --- Grouping Rules ---

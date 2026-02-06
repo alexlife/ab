@@ -199,7 +199,11 @@ const Step2Strategy = ({ data, updateData, isReadOnly, isOngoing }) => {
             <Divider style={{ margin: '32px 0' }} />
 
             <SpecOverlay specId="rule_audience_lock">
-                <Form.Item label={<Text strong>目标人群筛选 (必填)</Text>} required>
+                <Form.Item
+                    label={<Text strong>目标人群筛选 (必填)</Text>}
+                    required
+                    extra="支持选择多个目标人群。多个人群包之间是 OR (或) 的关系，即用户只要满足其中一个人群筛选条件，即可命中并参与本实验。"
+                >
                     <Select
                         mode="multiple"
                         placeholder="输入关键词搜索并回车添加人群包"

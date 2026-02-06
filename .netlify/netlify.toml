@@ -2,14 +2,17 @@ plugins = []
 headers = []
 redirects = []
 
+[dev]
+command = "npm run dev"
+
 [functions]
 
 [functions."*"]
 
 [build]
 publish = "/Users/yubo/Downloads/05 vibeCoding/abPlatform/ab-platform-demo/dist"
-publishOrigin = "ui"
-commandOrigin = "ui"
+publishOrigin = "config"
+commandOrigin = "config"
 command = "npm run build"
 
 [build.environment]

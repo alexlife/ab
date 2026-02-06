@@ -75,7 +75,7 @@ const Step1BasicInfo = ({ data, updateData, isReadOnly, isOngoing }) => {
                         onChange={(val) => updateData('featureId', val)}
                         options={availableFeatures.map(f => ({ label: f.name, value: f.id }))}
                         size="large"
-                        disabled={readOnly || !!data.id}
+                        disabled={readOnly || (!!data.id && data.status !== '草稿')}
                     />
                 </Form.Item>
             </SpecOverlay>
