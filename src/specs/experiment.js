@@ -10,7 +10,7 @@ export const EXPERIMENT_SPECS = {
     'rule_feature_bind': {
         id: 'rule_feature_bind',
         title: 'Feature 绑定',
-        content: '必须关联 Feature 才能进入第三步分组。遵循“一 Feature 一实验”原则。已关联实验或已固化的 Feature 将不在列表中显示。',
+        content: '必须关联 Feature 才能进入第三步分组。遵循“一 Feature 一实验”原则。草稿状态支持修改关联 Feature。已关联其他实验或已固化的 Feature 将不在列表中显示。',
         level: 'critical',
         source: 'PRD 2.1 实验基本信息'
     },
