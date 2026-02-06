@@ -72,7 +72,21 @@ const Step3Grouping = ({ data, updateData, isReadOnly, isOngoing }) => {
                             各实验组流量总计: {totalRatio}% / 100%
                         </Text>
                     </SpecOverlay>
-                    {!isLocked && <Button type="primary" ghost size="small" icon={<PlusOutlined />} onClick={addGroup} style={{ marginTop: 8 }}>添加新分组</Button>}
+                    {!isLocked && (
+                        <SpecOverlay specId="rule_max_groups">
+                            <Button
+                                type="primary"
+                                ghost
+                                size="small"
+                                icon={<PlusOutlined />}
+                                onClick={addGroup}
+                                style={{ marginTop: 8 }}
+                                disabled={data.groups.length >= 20}
+                            >
+                                添加新分组 总({data.groups.length})
+                            </Button>
+                        </SpecOverlay>
+                    )}
                 </div>
             </div>
 

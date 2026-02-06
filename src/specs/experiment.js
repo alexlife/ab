@@ -231,6 +231,13 @@ export const EXPERIMENT_SPECS = {
         content: '当【进行中】实验的“层内流量占比”设为 0% 时，实验进入“不进入新用户”模式。此时老用户保持原分组逻辑，但新用户将不再被分配进该实验。',
         level: 'info',
         source: 'PRD 5.2 运行中优化与管控'
+    },
+    'rule_max_groups': {
+        id: 'rule_max_groups',
+        title: '分桶总量上限',
+        content: '为了保证实验数据的统计学意义及系统分流性能，单个实验包含的分组总数（对照组+实验组）最高不得超过 20 个。',
+        level: 'warning',
+        source: 'PRD 1. 核心约束原则 / 2.3 实验分组'
     }
 };
 

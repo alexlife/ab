@@ -347,14 +347,25 @@ const ExperimentList = () => {
                                         transition: 'all 0.3s'
                                     }}>
                                         <Radio value={group.variationId}>
-                                            <Space direction="vertical" size={0}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                    <Text strong>{group.name}</Text>
-                                                    {group.isControl && <Tag>对照组</Tag>}
+                                            <Space direction="vertical" size={4}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                                    <Text strong style={{ fontSize: 15 }}>{group.name}</Text>
+                                                    <span style={{
+                                                        backgroundColor: '#f5f5f5',
+                                                        color: '#01b90aff',
+                                                        padding: '1px 8px',
+                                                        borderRadius: '4px',
+                                                        fontSize: '12px',
+                                                        fontWeight: 'normal'
+                                                    }}>
+                                                        {variation?.name || '未知'}
+                                                    </span>
                                                 </div>
-                                                <Text type="secondary" style={{ fontSize: 12 }}>
-                                                    绑定实验值: {variation?.name || '未知'}
-                                                </Text>
+                                                <div style={{ paddingLeft: 0 }}>
+                                                    <Text type="secondary" style={{ fontSize: 11 }}>
+                                                        配置参数: {variation?.content?.params?.map(p => `${p.key}=${p.value}`).join(', ') || '无参数'}
+                                                    </Text>
+                                                </div>
                                             </Space>
                                         </Radio>
                                     </div>

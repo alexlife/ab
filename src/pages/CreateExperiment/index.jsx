@@ -96,6 +96,10 @@ const CreateExperiment = () => {
         }
 
         const totalRatio = formData.groups.reduce((sum, g) => sum + (g.ratio || 0), 0);
+        if (formData.groups.length > 20) {
+            message.error('单个实验的分组总数不能超过 20 个');
+            return false;
+        }
         if (totalRatio !== 100) {
             message.error(`各实验组流量总和必须为 100%，当前为 ${totalRatio}%`);
             return false;

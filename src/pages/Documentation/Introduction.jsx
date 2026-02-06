@@ -310,7 +310,7 @@ const Introduction = () => {
                                     <Badge status="processing" offset={[10, 0]} color="#1677ff" />
                                     <AppstoreOutlined style={{ fontSize: 24, display: 'block', margin: '0 auto 8px', color: '#1677ff' }} />
                                     <Text strong>Feature 模块</Text>
-                                    <div style={{ fontSize: 11, color: '#888' }}>定义默认值 / 灰度比例</div>
+                                    <div style={{ fontSize: 11, color: '#888' }}>定义Feature / 默认值 / 灰度比例</div>
                                 </Card>
                                 <Card size="small" style={{ textAlign: 'center' }}>
                                     <Badge status="processing" offset={[10, 0]} color="#52c41a" />
