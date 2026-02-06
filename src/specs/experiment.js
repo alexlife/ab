@@ -148,8 +148,8 @@ export const EXPERIMENT_SPECS = {
     },
     'rule_feature_name_unique': {
         id: 'rule_feature_name_unique',
-        title: 'Feature 名称唯一性',
-        content: 'Feature 名称作为业务识别标识，在系统中必须全局唯一，不可重复。',
+        title: 'Feature Flag 名称唯一性',
+        content: 'Feature Flag 名称作为业务识别标识，在系统中必须全局唯一，不可重复。',
         level: 'critical',
         source: 'Feature PRD 2.1 数据字典'
     },

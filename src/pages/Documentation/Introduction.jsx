@@ -333,7 +333,74 @@ const Introduction = () => {
                 </div>
             </Card>
 
-            {/* System Relationship Section */}
+            {/* Feature Flag & Experiment Relationship */}
+            <Title level={2} id="flag-relation"><SafetyOutlined /> Feature Flag 与实验关系</Title>
+            <Card style={{ marginBottom: 40, borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)', borderTop: '4px solid #1677ff' }}>
+                <Row gutter={48} align="middle">
+                    <Col span={10}>
+                        <div style={{ padding: '24px', background: '#f0f7ff', borderRadius: 12, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <Title level={4} style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <SafetyOutlined style={{ color: '#1677ff' }} /> 核心分工：决策与执行
+                            </Title>
+                            <Space direction="vertical" size={24}>
+                                <div>
+                                    <Text strong style={{ fontSize: 16, color: '#1677ff', display: 'block', marginBottom: 4 }}>A/B 实验 = 决策 (Who)</Text>
+                                    <Text type="secondary">这是一种<Text strong>统计意义上的对照设计</Text>。负责分桶，利用哈希算法决定哪些用户进入 A 组或 B 组。</Text>
+                                </div>
+                                <div style={{ textAlign: 'center' }}>
+                                    <ArrowRightOutlined style={{ fontSize: 20, color: '#bfbfbf', transform: 'rotate(90deg)' }} />
+                                </div>
+                                <div>
+                                    <Text strong style={{ fontSize: 16, color: '#52c41a', display: 'block', marginBottom: 4 }}>Feature Flag = 执行 (What)</Text>
+                                    <Text type="secondary">这是一种<Text strong>工程上的开关/路由机制</Text>。负责远程控制代码行为，让不同组的用户看到不同的配置值。</Text>
+                                </div>
+                            </Space>
+                        </div>
+                    </Col>
+                    <Col span={14}>
+                        <div style={{ textAlign: 'center', padding: '10px' }}>
+                            <div style={{ marginBottom: 20 }}>
+                                <Text type="secondary" style={{ fontSize: 12 }}>协同工作流示意</Text>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#f6ffed', border: '2px solid #b7eb8f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>
+                                        <ExperimentOutlined style={{ fontSize: 32, color: '#52c41a' }} />
+                                    </div>
+                                    <Text strong style={{ fontSize: 12 }}>A/B 实验系统</Text>
+                                    <div style={{ fontSize: 10, color: '#999' }}>分桶与策略</div>
+                                </div>
+
+                                <ArrowRightOutlined style={{ fontSize: 20, color: '#d9d9d9' }} />
+
+                                <div style={{ padding: '20px', borderRadius: 16, background: '#1677ff', boxShadow: '0 4px 15px rgba(22,119,255,0.3)', color: '#fff', textAlign: 'center' }}>
+                                    <SafetyOutlined style={{ fontSize: 40, marginBottom: 8 }} />
+                                    <div style={{ fontSize: 16, fontWeight: 'bold' }}>Feature Flag</div>
+                                    <div style={{ fontSize: 10, opacity: 0.8 }}>代码远程开关</div>
+                                </div>
+
+                                <ArrowRightOutlined style={{ fontSize: 20, color: '#d9d9d9' }} />
+
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#f9f0ff', border: '2px solid #d3adf7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>
+                                        <AppstoreOutlined style={{ fontSize: 32, color: '#722ed1' }} />
+                                    </div>
+                                    <Text strong style={{ fontSize: 12 }}>业务端侧/App</Text>
+                                    <div style={{ fontSize: 10, color: '#999' }}>配置实时生效</div>
+                                </div>
+                            </div>
+
+                            <div style={{ marginTop: 24, textAlign: 'left', background: '#fafafa', padding: '16px', borderRadius: 12, border: '1px solid #f0f0f0' }}>
+                                <Badge status="processing" text={<Text strong>关键原则：</Text>} />
+                                <Paragraph type="secondary" style={{ fontSize: 12, marginTop: 8, marginBottom: 0 }}>
+                                    • <Text strong>解耦</Text>：Flag 让代码具备配置能力，实验系统决定决策。<br />
+                                    • <Text strong>冲突保护</Text>：不要让多个实验同时争夺同一个原子 Flag 的控制权，以免污染实验数据。
+                                </Paragraph>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+            </Card>
             <Title level={2} id="relationship"><DeploymentUnitOutlined /> 核心模块协同关系</Title>
             <Card style={{ marginBottom: 40, borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <Paragraph>
@@ -345,7 +412,7 @@ const Introduction = () => {
                     dataSource={[
                         {
                             key: '1',
-                            module: 'Feature 模块',
+                            module: 'Feature Flag 模块',
                             responsibility: '功能定义与配置。负责 Feature 的生命周期管理（创建、默认值、历史版本、全量切流）。',
                             example: '“首页瀑布流”功能是否存在？默认颜色是什么？',
                             icon: <SafetyOutlined style={{ color: '#1677ff', fontSize: 20 }} />
@@ -360,8 +427,8 @@ const Introduction = () => {
                         {
                             key: '3',
                             module: '下发/路由模块',
-                            responsibility: '执行与最终分发。根据 UID 以及上下文信息，动态查询 AB 策略或灰度策略并匹配 Feature 配置，产生最终结果。Feature 模块和 AB 测试模块都会用到下发',
-                            example: 'UID:123 经过 Hash 命中实验组 B → 匹配该组绑定的实验值 → 返回配置: color: red；某些 Feature 需要按一定时间节奏或者人群节奏来逐步下发等',
+                            responsibility: '执行与最终分发。根据 UID 以及上下文信息，动态查询 AB 策略或灰度策略并匹配 Feature 配置，产生最终结果。Feature Flag 模块和 AB 测试模块都会用到下发。',
+                            example: 'UID:123 经过 Hash 命中实验组 B → 匹配该组绑定的实验值 → 返回配置: color: red；某些 Feature 需要按一定时间节奏或者人群节奏来逐步下发等。',
                             icon: <DeploymentUnitOutlined style={{ color: '#722ed1', fontSize: 20 }} />
                         }
                     ]}
@@ -401,8 +468,8 @@ const Introduction = () => {
                                 <Card size="small" style={{ textAlign: 'center' }}>
                                     <Badge status="processing" offset={[10, 0]} color="#1677ff" />
                                     <AppstoreOutlined style={{ fontSize: 24, display: 'block', margin: '0 auto 8px', color: '#1677ff' }} />
-                                    <Text strong>Feature 模块</Text>
-                                    <div style={{ fontSize: 11, color: '#888' }}>定义Feature / 默认值 / 灰度比例</div>
+                                    <Text strong>Feature Flag 模块</Text>
+                                    <div style={{ fontSize: 11, color: '#888' }}>定义Feature / 默认值 / 灰度方案</div>
                                 </Card>
                                 <Card size="small" style={{ textAlign: 'center' }}>
                                     <Badge status="processing" offset={[10, 0]} color="#52c41a" />

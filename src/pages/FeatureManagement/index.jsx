@@ -279,7 +279,7 @@ const FeatureManagement = () => {
 
     const columns = [
         {
-            title: 'Feature 名称',
+            title: '名称',
             dataIndex: 'name',
             key: 'name',
             render: (text, record) => {
@@ -440,7 +440,7 @@ const FeatureManagement = () => {
             <Modal title={editingFeat ? "编辑 Feature" : "新建 Feature"} open={isFeatModalOpen} onOk={handleFeatSubmit} onCancel={() => setIsFeatModalOpen(false)}>
                 <Form form={form} layout="vertical">
                     <SpecOverlay specId="rule_feature_name_unique">
-                        <Form.Item name="name" label="Feature 名称" rules={[{ required: true }]}><Input placeholder="例如：主底按钮样式" /></Form.Item>
+                        <Form.Item name="name" label="名称" rules={[{ required: true }]}><Input placeholder="例如：主底按钮样式" /></Form.Item>
                     </SpecOverlay>
                     <SpecOverlay specId="rule_feature_unique_key">
                         <Form.Item name="key" label="Feature Key" rules={[{ required: true }]}><Input placeholder="例如：main_btn_style" disabled={editingFeat} /></Form.Item>

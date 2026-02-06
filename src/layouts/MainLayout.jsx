@@ -76,7 +76,7 @@ const LayoutContent = () => {
 
     const items = [
         { key: '/experiments', icon: <ExperimentOutlined />, label: '实验管理' },
-        { key: '/features', icon: <DesktopOutlined />, label: 'Feature 列表' },
+        { key: '/features', icon: <DesktopOutlined />, label: 'Feature Flag' },
         { key: '/introduction', icon: <BulbOutlined />, label: '说明' },
         { key: '/settings', icon: <SettingOutlined />, label: '系统设置' },
     ];
@@ -99,7 +99,7 @@ const LayoutContent = () => {
                 <Header style={{ padding: '0 24px', background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', zIndex: 1001 }}>
                     <Title level={4} style={{ margin: 0 }}>
                         {location.pathname.includes('/experiments') ? '实验管理' :
-                            location.pathname.includes('/features') ? 'Feature 列表' :
+                            location.pathname.includes('/features') ? 'Feature Flag' :
                                 location.pathname.includes('/introduction') ? '说明' : '系统设置'}
                     </Title>
                     <Space size="large">

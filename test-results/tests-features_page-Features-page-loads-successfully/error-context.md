@@ -49,9 +49,9 @@
         - generic [ref=e74]:
           - table [ref=e78]:
             - rowgroup [ref=e84]:
-              - row "Feature 名称 关联实验 状态 操作" [ref=e85]:
+              - row "Feature Flag 名称 关联实验 状态 操作" [ref=e85]:
                 - columnheader [ref=e86]
-                - columnheader "Feature 名称" [ref=e87]
+                - columnheader "Feature Flag 名称" [ref=e87]
                 - columnheader "关联实验" [ref=e88]
                 - columnheader "状态" [ref=e89]
                 - columnheader "操作" [ref=e90]
