@@ -28,6 +28,98 @@ const Introduction = () => {
                 </Paragraph>
             </div>
 
+            {/* Traffic Evolution Section */}
+            <Title level={2} id="evolution"><ArrowsAltOutlined /> 流量模型演进</Title>
+            <Card style={{ marginBottom: 40, borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+                <Row gutter={48}>
+                    <Col span={12}>
+                        <div style={{ padding: '10px 0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+                                <Badge status="default" />
+                                <Title level={4} style={{ color: '#8c8c8c', margin: 0 }}>过去：单层互斥模式</Title>
+                            </div>
+                            <Paragraph type="secondary" style={{ textAlign: 'center', marginBottom: 32 }}>
+                                只有一个 100% 流量池，实验之间是“存量博弈”
+                            </Paragraph>
+
+                            <div style={{ position: 'relative', padding: '0 20px' }}>
+                                {/* Single 100% Bar */}
+                                <div style={{ height: 44, background: '#f5f5f5', borderRadius: 6, display: 'flex', overflow: 'hidden', border: '1px solid #d9d9d9', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+                                    <div style={{ width: '45%', background: 'linear-gradient(90deg, #40a9ff, #1677ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 13, fontWeight: 500 }}>实验 A (45%)</div>
+                                    <div style={{ width: '55%', background: 'linear-gradient(90deg, #73d13d, #52c41a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 13, fontWeight: 500 }}>实验 B (55%)</div>
+                                </div>
+                                <div style={{ textAlign: 'center', marginTop: 12, color: '#bfbfbf', fontSize: 12 }}>
+                                    <Text type="secondary" style={{ fontSize: 12 }}>总容量：100% (已占满)</Text>
+                                </div>
+
+                                {/* Pain Point */}
+                                <div style={{ marginTop: 48, background: '#fff2f0', border: '1px solid #ffccc7', borderRadius: 8, padding: '20px', position: 'relative' }}>
+                                    <div style={{ position: 'absolute', top: -12, left: 20, background: '#ff4d4f', color: '#fff', padding: '2px 12px', borderRadius: 12, fontSize: 12, fontWeight: 'bold', boxShadow: '0 2px 4px rgba(255,77,79,0.3)' }}>
+                                        问题
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                        <div style={{ width: 70, height: 36, background: '#d9d9d9', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8c8c8c', fontSize: 13, border: '1px dashed #bfbfbf' }}>实验 C</div>
+                                        <div>
+                                            <Text type="danger" strong style={{ display: 'block' }}>流量告急：无法直接创建</Text>
+                                            <Text type="secondary" style={{ fontSize: 12 }}>痛点：实验 C 必须排队等候，直到 A 或 B 释放流量</Text>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Col>
+
+                    <Col span={12} style={{ borderLeft: '1px solid #f0f0f0' }}>
+                        <div style={{ padding: '10px 0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+                                <Badge status="processing" />
+                                <Title level={4} style={{ color: '#1677ff', margin: 0 }}>当前：多层并行模式</Title>
+                            </div>
+                            <Paragraph type="secondary" style={{ textAlign: 'center', marginBottom: 32 }}>
+                                流量利用率翻倍，不同维度的实验“各行其道”
+                            </Paragraph>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '0 20px' }}>
+                                {/* Layer 1: UI */}
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                                        <Text strong style={{ fontSize: 13, color: '#1677ff' }}>Layer 1: UI 表现层 (视觉/交互)</Text>
+                                        <Tag color="blue" bordered={false}>100% 流量</Tag>
+                                    </div>
+                                    <div style={{ height: 38, background: '#f5f5f5', borderRadius: 6, display: 'flex', overflow: 'hidden', border: '1px solid #adc6ff', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+                                        <div style={{ width: '35%', background: 'linear-gradient(90deg, #40a9ff, #1677ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontWeight: 500, borderRight: '1px solid rgba(255,255,255,0.2)' }}>实验 A (35%)</div>
+                                        <div style={{ width: '25%', background: 'linear-gradient(90deg, #69c0ff, #40a9ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontWeight: 500 }}>实验 B (25%)</div>
+                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bfbfbf', fontSize: 11, fontStyle: 'italic' }}>剩余 40%</div>
+                                    </div>
+                                </div>
+
+                                {/* Layer 2: Algo */}
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                                        <Text strong style={{ fontSize: 13, color: '#52c41a' }}>Layer 2: 核心算法层 (推荐/排序)</Text>
+                                        <Tag color="green" bordered={false}>100% 流量</Tag>
+                                    </div>
+                                    <div style={{ height: 38, background: '#f5f5f5', borderRadius: 6, display: 'flex', overflow: 'hidden', border: '1px solid #b7eb8f', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+                                        <div style={{ width: '40%', background: 'linear-gradient(90deg, #73d13d, #52c41a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontWeight: 500, borderRight: '1px solid rgba(255,255,255,0.2)' }}>实验 C (40%)</div>
+                                        <div style={{ width: '40%', background: 'linear-gradient(90deg, #95de64, #73d13d)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontWeight: 500 }}>实验 D (40%)</div>
+                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bfbfbf', fontSize: 11, fontStyle: 'italic' }}>剩余 20%</div>
+                                    </div>
+                                </div>
+
+                                {/* Advantage Alert */}
+                                <Alert
+                                    message="优势：业务无感并行"
+                                    description="用户可同时参与 UI 与 算法 实验，实验 A 与 C 不再竞争同一张饼，流量利用率成倍提升。"
+                                    type="success"
+                                    showIcon
+                                    style={{ marginTop: 8, borderRadius: 8 }}
+                                />
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+            </Card>
+
             {/* Experiment Lifecycle Section */}
             <Title level={2} id="lifecycle"><RocketOutlined /> 实验生命周期</Title>
             <Card style={{ marginBottom: 40, borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
